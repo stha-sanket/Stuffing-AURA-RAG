@@ -1,8 +1,4 @@
-fastapi
-uvicorn[standard]
-httpx
-pydantic
-torch
-torchaudio
-transformers
+flask
+flask-socketio
 piper-tts
+gpiozero
