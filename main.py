@@ -3,16 +3,125 @@ import math
 import json
 from pathlib import Path
 from collections import Counter
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import httpx
+import sys
+import os
+import io
+import wave
+import base64
+import tempfile
+import warnings
 
+warnings.filterwarnings('ignore', message='.*FRAME_DURATION_MS.*')
+
+import torch
+import torchaudio
+from transformers import AutoModel
+
+# ── App setup (MUST come first) ─────────────────────────────────────────────
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 DATA_DIR = Path(__file__).parent / "Data"
+
+# ── STT/TTS setup ────────────────────────────────────────────────────────────
+sys.path.insert(0, '/home/sunway/llm/piper1-gpl/src')  # adjust path
+
+_PIPER_MODEL = '/home/sunway/llm/piper1-gpl/ne_NP-google-medium.onnx'
+_INDIC_STT_MODEL_ID = 'ai4bharat/indic-conformer-600m-multilingual'
+
+tts_voice = None
+syn_config = None
+indic_stt_model = None
+
+
+@app.on_event("startup")
+async def load_models():
+    global tts_voice, syn_config, indic_stt_model
+
+    try:
+        from piper import PiperVoice
+        from piper.config import SynthesisConfig
+        tts_voice = PiperVoice.load(_PIPER_MODEL)
+        syn_config = SynthesisConfig(speaker_id=10)
+        print("TTS loaded.")
+    except Exception as e:
+        print(f"TTS load failed: {e}")
+
+    try:
+        indic_stt_model = AutoModel.from_pretrained(
+            _INDIC_STT_MODEL_ID,
+            trust_remote_code=True,
+        )
+        indic_stt_model.eval()
+        print("Indic Conformer STT loaded.")
+    except Exception as e:
+        print(f"Indic STT load failed: {e}")
+
+
+def _load_audio_tensor(path: str) -> torch.Tensor:
+    wav, sr = torchaudio.load(path)
+    if wav.shape[0] > 1:
+        wav = torch.mean(wav, dim=0, keepdim=True)
+    if sr != 16000:
+        wav = torchaudio.functional.resample(wav, sr, 16000)
+    return wav
+
+
+def _synthesize(text: str):
+    global tts_voice, syn_config
+    if tts_voice is None or not text.strip():
+        return None
+    try:
+        buf = io.BytesIO()
+        with wave.open(buf, "wb") as wf:
+            tts_voice.synthesize_wav(text, wf, syn_config=syn_config)
+        data = buf.getvalue()
+        with wave.open(io.BytesIO(data), "rb") as chk:
+            if chk.getnframes() == 0:
+                return None
+        return base64.b64encode(data).decode("utf-8")
+    except Exception as e:
+        print(f"TTS error: {e}")
+        return None
+
+
+@app.post("/transcribe")
+async def transcribe(audio: UploadFile = File(...), language: str = Form("ne")):
+    suffix = os.path.splitext(audio.filename or ".webm")[1] or ".webm"
+    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+        content = await audio.read()
+        tmp.write(content)
+        tmp_path = tmp.name
+
+    text = ""
+    try:
+        if indic_stt_model is not None:
+            wav = _load_audio_tensor(tmp_path)
+            with torch.no_grad():
+                text = indic_stt_model(wav, language, "ctc")
+                if isinstance(text, list):
+                    text = text[0] if text else ""
+    except Exception as e:
+        print(f"[transcribe] Error: {e}")
+        text = ""
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except Exception:
+            pass
+
+    return {"text": text}
+
+
+@app.post("/synthesize")
+async def synthesize(text: str = Form(...)):
+    audio_b64 = _synthesize(text)
+    return {"audio_b64": audio_b64}
 
 # ── Keyword map ───────────────────────────────────────────────────────────────
 KEYWORD_MAP = {
