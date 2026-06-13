@@ -560,7 +560,7 @@
       </div>
       <div class="model-selector-label">Active Model</div>
       <select id="model-select">
-        <option value="gemma2:2b">gemma2:2b</option>
+        <option value="gemma4:e2b">gemma4:e2b</option>
       </select>
     </div>
 
@@ -627,7 +627,9 @@
   </div>
 
   <script>
-    const API = window.location.origin === 'null' ? 'http://localhost:8000' : window.location.origin;
+    // ── FIXED: hardcoded to your Raspberry Pi backend ──
+    const API = 'http://103.41.172.9:8000';
+
     let conversationHistory = [];
     let isStreaming = false;
     let sessions = [];
@@ -682,6 +684,8 @@
               modelSelect.appendChild(opt);
             });
           }
+        } else {
+          throw new Error('Non-OK response');
         }
       } catch {
         statusDot.classList.add('offline');
@@ -748,11 +752,8 @@
     function addSourceCards(row, sources) {
       if (!sources || sources.length === 0) return;
       const body = row.querySelector('.msg-body');
-      
-      // Remove any existing source cards
       const existing = body.querySelector('.source-cards');
       if (existing) existing.remove();
-
       const cards = document.createElement('div');
       cards.className = 'source-cards';
       sources.forEach(s => {
@@ -867,7 +868,7 @@
           const { done, value } = await reader.read();
           if (done) break;
           streamBuffer += decoder.decode(value, { stream: true });
-          
+
           if (!metadataParsed) {
             const newlineIdx = streamBuffer.indexOf('\n');
             if (newlineIdx !== -1) {
@@ -885,9 +886,9 @@
               }
             }
           }
-          
+
           if (metadataParsed || !streamBuffer.startsWith('__METADATA__:')) {
-            metadataParsed = true; 
+            metadataParsed = true;
             full = streamBuffer;
             bubble.innerHTML = marked.parse(full);
             scrollBottom();
@@ -896,7 +897,6 @@
 
         conversationHistory.push({ role: 'assistant', content: full });
 
-        // Save session
         if (!currentSessionId) {
           currentSessionId = Date.now().toString();
           sessions.push({ id: currentSessionId, title: text.slice(0, 40) + (text.length > 40 ? '…' : ''), history: [], messages: [] });
@@ -917,7 +917,7 @@
         const bubble = document.createElement('div');
         bubble.className = 'msg-bubble';
         bubble.style.color = '#DC2626';
-        bubble.textContent = 'Could not reach the backend. Make sure it is running on port 8000.';
+        bubble.textContent = `Error: ${e.message}. Make sure your backend is running and CORS is enabled.`;
         body.appendChild(bubble);
         showError(e.message);
       }

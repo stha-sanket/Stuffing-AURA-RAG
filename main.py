@@ -74,21 +74,22 @@ KEYWORD_MAP = {
     "application":      ["DocumentRequired", "EligibilityCriteria"],
     "admission":        ["DocumentRequired", "EligibilityCriteria"],
     # BODS
-    "bods":             ["AboutUs"],
-    "board":            ["AboutUs"],
-    "director":         ["AboutUs"],
-    "governance":       ["AboutUs"],
-    "management":       ["AboutUs"],
-    "chairman":         ["AboutUs"],
-    "trustee":          ["AboutUs"],
-    "staff":            ["AboutUs"],
-    "team":             ["AboutUs"],
-    "who":              ["AboutUs"],
-    "person":           ["AboutUs"],
-    "head":             ["AboutUs"],
-    "executive":        ["AboutUs"],
-    "officer":          ["AboutUs"],
-
+    "bods":             ["BODS"],
+    "board":            ["BODS"],
+    "director":         ["BODS"],
+    "governance":       ["BODS"],
+    "management":       ["BODS"],
+    "chairman":         ["BODS"],
+    "trustee":          ["BODS"],
+    "staff":            ["BODS"],
+    "team":             ["BODS"],
+    "who":              ["BODS"],
+    "person":           ["BODS"],
+    "head":             ["BODS"],
+    "executive":        ["BODS"],
+    "officer":          ["BODS"],
+    "principal":        ["BODS"],
+    "dean":             ["BODS"],
     # RAIN
     "rain":             ["rain"],
     "incubation":       ["rain"],
@@ -245,6 +246,12 @@ async def get_models():
         return {"models": ["gemma4:e2b", "gemma2:2b"]}
 
 
+@app.get("/health")
+async def health():
+    index = build_index()
+    return {"status": "ok", "chunks": len(index.chunks)}
+
+
 @app.post("/api/reload")
 async def reload_index():
     """Hit this after editing any .md file — no server restart needed."""
@@ -325,11 +332,3 @@ CONTEXT:
             yield chunk
 
     return StreamingResponse(streaming_response(), media_type="text/plain")
-
-
-@app.get("/", response_class=HTMLResponse)
-async def index_page():
-    html_path = Path(__file__).parent / "index.html"
-    if html_path.exists():
-        return HTMLResponse(content=html_path.read_text(encoding="utf-8"))
-    return HTMLResponse("<h1>index.html not found</h1>", status_code=404)
