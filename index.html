@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aura — Sunway Intelligence</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap"
+    rel="stylesheet" />
   <style>
     :root {
       --crimson: #B91C3A;
@@ -18,12 +21,18 @@
       --border: #E2E8F0;
       --surface: #F8FAFC;
       --white: #FFFFFF;
-      --shadow-sm: 0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
-      --shadow-md: 0 4px 16px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.04);
-      --shadow-lg: 0 12px 40px rgba(15,23,42,0.1), 0 4px 12px rgba(15,23,42,0.06);
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
+      --shadow-lg: 0 12px 40px rgba(15, 23, 42, 0.1), 0 4px 12px rgba(15, 23, 42, 0.06);
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: 'Inter', sans-serif;
@@ -68,7 +77,15 @@
       flex-shrink: 0;
     }
 
-    .brand-icon svg { width: 18px; height: 18px; fill: none; stroke: white; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .brand-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: white;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
 
     .brand-name {
       font-size: 15px;
@@ -114,7 +131,9 @@
       padding-right: 28px;
     }
 
-    #model-select:focus { border-color: var(--crimson); }
+    #model-select:focus {
+      border-color: var(--crimson);
+    }
 
     /* History */
     #sidebar-history {
@@ -147,8 +166,16 @@
       line-height: 1.4;
     }
 
-    .history-item:hover { background: var(--surface); color: var(--ink); }
-    .history-item.active { background: var(--crimson-light); color: var(--crimson); font-weight: 500; }
+    .history-item:hover {
+      background: var(--surface);
+      color: var(--ink);
+    }
+
+    .history-item.active {
+      background: var(--crimson-light);
+      color: var(--crimson);
+      font-weight: 500;
+    }
 
     #sidebar-footer {
       padding: 16px 20px;
@@ -173,8 +200,18 @@
       gap: 6px;
     }
 
-    #new-chat-btn:hover { background: var(--crimson-deep); }
-    #new-chat-btn svg { width: 14px; height: 14px; stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; }
+    #new-chat-btn:hover {
+      background: var(--crimson-deep);
+    }
+
+    #new-chat-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: white;
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+    }
 
     /* ── Main ── */
     #main {
@@ -217,10 +254,13 @@
       height: 7px;
       border-radius: 50%;
       background: #22C55E;
-      box-shadow: 0 0 0 2px rgba(34,197,94,0.2);
+      box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
     }
 
-    .status-dot.offline { background: #EF4444; box-shadow: 0 0 0 2px rgba(239,68,68,0.2); }
+    .status-dot.offline {
+      background: #EF4444;
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+    }
 
     /* Chat area */
     #chat-area {
@@ -233,9 +273,18 @@
       scroll-behavior: smooth;
     }
 
-    #chat-area::-webkit-scrollbar { width: 4px; }
-    #chat-area::-webkit-scrollbar-track { background: transparent; }
-    #chat-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    #chat-area::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    #chat-area::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #chat-area::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
 
     /* Empty state */
     #empty-state {
@@ -257,10 +306,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 8px 24px rgba(185,28,58,0.25);
+      box-shadow: 0 8px 24px rgba(185, 28, 58, 0.25);
     }
 
-    .empty-icon svg { width: 30px; height: 30px; stroke: white; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .empty-icon svg {
+      width: 30px;
+      height: 30px;
+      stroke: white;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
 
     .empty-title {
       font-family: 'DM Serif Display', serif;
@@ -310,7 +367,15 @@
       transform: translateY(-1px);
     }
 
-    .suggestion-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; opacity: 0.5; flex-shrink: 0; }
+    .suggestion-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
 
     /* Messages */
     .msg-row {
@@ -322,11 +387,20 @@
     }
 
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    .msg-row.user { flex-direction: row-reverse; }
+    .msg-row.user {
+      flex-direction: row-reverse;
+    }
 
     .msg-avatar {
       width: 32px;
@@ -342,10 +416,17 @@
 
     .msg-avatar.aura-av {
       background: linear-gradient(135deg, var(--crimson), var(--crimson-deep));
-      box-shadow: 0 2px 8px rgba(185,28,58,0.2);
+      box-shadow: 0 2px 8px rgba(185, 28, 58, 0.2);
     }
 
-    .msg-avatar.aura-av svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; }
+    .msg-avatar.aura-av svg {
+      width: 16px;
+      height: 16px;
+      stroke: white;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
 
     .msg-avatar.user-av {
       background: var(--ink);
@@ -354,7 +435,11 @@
       letter-spacing: 0.02em;
     }
 
-    .msg-body { flex: 1; min-width: 0; max-width: 680px; }
+    .msg-body {
+      flex: 1;
+      min-width: 0;
+      max-width: 680px;
+    }
 
     .msg-meta {
       font-size: 11px;
@@ -365,7 +450,9 @@
       margin-bottom: 6px;
     }
 
-    .msg-row.user .msg-meta { text-align: right; }
+    .msg-row.user .msg-meta {
+      text-align: right;
+    }
 
     .msg-bubble {
       padding: 14px 18px;
@@ -389,7 +476,11 @@
       margin-left: auto;
     }
 
-    .msg-row.user .msg-body { display: flex; flex-direction: column; align-items: flex-end; }
+    .msg-row.user .msg-body {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
 
     /* Source cards */
     .source-cards {
@@ -449,12 +540,27 @@
       animation: bounce 1.2s infinite;
     }
 
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
 
     @keyframes bounce {
-      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-      30% { transform: translateY(-5px); opacity: 1; }
+
+      0%,
+      60%,
+      100% {
+        transform: translateY(0);
+        opacity: 0.4;
+      }
+
+      30% {
+        transform: translateY(-5px);
+        opacity: 1;
+      }
     }
 
     /* ── Input bar ── */
@@ -478,7 +584,7 @@
 
     .input-wrap:focus-within {
       border-color: var(--crimson);
-      box-shadow: 0 0 0 3px rgba(185,28,58,0.08);
+      box-shadow: 0 0 0 3px rgba(185, 28, 58, 0.08);
       background: var(--white);
     }
 
@@ -497,7 +603,9 @@
       padding: 2px 0;
     }
 
-    #msg-input::placeholder { color: var(--ink-light); }
+    #msg-input::placeholder {
+      color: var(--ink-light);
+    }
 
     #send-btn {
       width: 38px;
@@ -513,10 +621,29 @@
       transition: background 0.2s, transform 0.1s;
     }
 
-    #send-btn:hover { background: var(--crimson-deep); }
-    #send-btn:active { transform: scale(0.95); }
-    #send-btn:disabled { background: var(--border); cursor: default; transform: none; }
-    #send-btn svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    #send-btn:hover {
+      background: var(--crimson-deep);
+    }
+
+    #send-btn:active {
+      transform: scale(0.95);
+    }
+
+    #send-btn:disabled {
+      background: var(--border);
+      cursor: default;
+      transform: none;
+    }
+
+    #send-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: white;
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
 
     .input-hint {
       font-size: 11px;
@@ -539,11 +666,21 @@
     }
 
     /* Scrollbar for sidebar */
-    #sidebar-history::-webkit-scrollbar { width: 3px; }
-    #sidebar-history::-webkit-scrollbar-track { background: transparent; }
-    #sidebar-history::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    #sidebar-history::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    #sidebar-history::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #sidebar-history::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
   </style>
 </head>
+
 <body>
 
   <!-- Sidebar -->
@@ -551,7 +688,11 @@
     <div id="sidebar-header">
       <div class="brand-mark">
         <div class="brand-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5" />
+            <path d="M2 12l10 5 10-5" />
+          </svg>
         </div>
         <div>
           <div class="brand-name">Aura</div>
@@ -571,7 +712,10 @@
 
     <div id="sidebar-footer">
       <button id="new-chat-btn">
-        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <svg viewBox="0 0 24 24">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
         New Conversation
       </button>
     </div>
@@ -590,24 +734,35 @@
     <div id="chat-area">
       <div id="empty-state">
         <div class="empty-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" />
+          </svg>
         </div>
         <div>
           <div class="empty-title">How can I help you today?</div>
-          <div class="empty-sub">I have access to Sunway College's knowledge base. Ask me about programs, RAIN, admissions, or campus life.</div>
+          <div class="empty-sub">I have access to Sunway College's knowledge base. Ask me about programs, RAIN,
+            admissions, or campus life.</div>
         </div>
         <div class="suggestions" id="suggestions">
           <button class="suggestion-btn" onclick="fillInput('What is the RAIN incubation center?')">
             What is the RAIN incubation center?
-            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <svg viewBox="0 0 24 24">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
           </button>
           <button class="suggestion-btn" onclick="fillInput('What are the placement partners of Sunway College?')">
             What are the placement partners of Sunway College?
-            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <svg viewBox="0 0 24 24">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
           </button>
           <button class="suggestion-btn" onclick="fillInput('What courses are offered?')">
             What courses are offered?
-            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <svg viewBox="0 0 24 24">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
           </button>
         </div>
       </div>
@@ -619,7 +774,9 @@
       <div class="input-wrap">
         <textarea id="msg-input" placeholder="Ask about Sunway College…" rows="1"></textarea>
         <button id="send-btn" disabled>
-          <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          <svg viewBox="0 0 24 24">
+            <path d="M12 19V5M5 12l7-7 7 7" />
+          </svg>
         </button>
       </div>
       <div class="input-hint">Press Enter to send · Shift+Enter for new line</div>
@@ -627,215 +784,115 @@
   </div>
 
   <script>
-    // ── FIXED: hardcoded to your Raspberry Pi backend ──
-    const API = 'http://103.41.172.9:8000';
+    // ✅ Your Cloudflare Tunnel backend
+    const API = 'https://flower-stocks-drinks-lyrics.trycloudflare.com';
 
     let conversationHistory = [];
     let isStreaming = false;
     let sessions = [];
     let currentSessionId = null;
 
-    const chatArea    = document.getElementById('chat-area');
-    const emptyState  = document.getElementById('empty-state');
-    const msgInput    = document.getElementById('msg-input');
-    const sendBtn     = document.getElementById('send-btn');
+    const chatArea = document.getElementById('chat-area');
+    const msgInput = document.getElementById('msg-input');
+    const sendBtn = document.getElementById('send-btn');
     const modelSelect = document.getElementById('model-select');
-    const statusDot   = document.getElementById('status-dot');
-    const statusText  = document.getElementById('status-text');
+    const statusDot = document.getElementById('status-dot');
+    const statusText = document.getElementById('status-text');
     const errorBanner = document.getElementById('error-banner');
     const historyList = document.getElementById('history-list');
 
-    // ── Auto-resize textarea ──
-    msgInput.addEventListener('input', () => {
-      msgInput.style.height = 'auto';
-      msgInput.style.height = Math.min(msgInput.scrollHeight, 140) + 'px';
-      sendBtn.disabled = !msgInput.value.trim() || isStreaming;
-    });
-
-    msgInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-    });
-
-    sendBtn.addEventListener('click', sendMessage);
-
-    document.getElementById('new-chat-btn').addEventListener('click', newChat);
-
-    function fillInput(text) {
-      msgInput.value = text;
-      msgInput.dispatchEvent(new Event('input'));
-      msgInput.focus();
+    // ── UI helpers ──
+    function scrollBottom() {
+      chatArea.scrollTop = chatArea.scrollHeight;
     }
 
-    // ── Check backend status ──
-    async function checkStatus() {
-      try {
-        const res = await fetch(`${API}/api/models`);
-        if (res.ok) {
-          const data = await res.json();
-          statusDot.classList.remove('offline');
-          statusText.textContent = 'Connected';
-          if (data.models && data.models.length > 0) {
-            const currentVal = modelSelect.value;
-            modelSelect.innerHTML = '';
-            data.models.forEach(m => {
-              const opt = document.createElement('option');
-              opt.value = m; opt.textContent = m;
-              if (m === currentVal || (!currentVal && m.includes('gemma'))) opt.selected = true;
-              modelSelect.appendChild(opt);
-            });
-          }
-        } else {
-          throw new Error('Non-OK response');
-        }
-      } catch {
-        statusDot.classList.add('offline');
-        statusText.textContent = 'Backend offline';
-      }
+    function escHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
     }
 
     function showError(msg) {
       errorBanner.textContent = msg;
       errorBanner.style.display = 'block';
-      setTimeout(() => { errorBanner.style.display = 'none'; }, 5000);
-    }
-
-    function hideEmpty() {
-      const empty = document.getElementById('empty-state');
-      if (empty && empty.parentNode) empty.remove();
+      setTimeout(() => errorBanner.style.display = 'none', 5000);
     }
 
     function appendUserMessage(text) {
-      hideEmpty();
       const row = document.createElement('div');
       row.className = 'msg-row user';
       row.innerHTML = `
-        <div class="msg-avatar user-av">You</div>
-        <div class="msg-body">
-          <div class="msg-meta">You</div>
-          <div class="msg-bubble">${escHtml(text)}</div>
-        </div>`;
+      <div class="msg-avatar user-av">You</div>
+      <div class="msg-body">
+        <div class="msg-meta">You</div>
+        <div class="msg-bubble">${escHtml(text)}</div>
+      </div>`;
       chatArea.appendChild(row);
       scrollBottom();
-      return row;
     }
 
-    function appendAuraMessage() {
+    function appendAuraTyping() {
       const row = document.createElement('div');
       row.className = 'msg-row aura';
       row.innerHTML = `
-        <div class="msg-avatar aura-av">
-          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <div class="msg-avatar aura-av">A</div>
+      <div class="msg-body">
+        <div class="msg-meta">Aura</div>
+        <div class="typing-dots">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
         </div>
-        <div class="msg-body">
-          <div class="msg-meta">Aura</div>
-          <div class="typing-dots">
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-          </div>
-        </div>`;
+      </div>`;
       chatArea.appendChild(row);
       scrollBottom();
       return row;
     }
 
-    function convertTypingToBubble(row) {
+    function convertToBubble(row) {
       const body = row.querySelector('.msg-body');
-      const dots = body.querySelector('.typing-dots');
-      if (dots) dots.remove();
+      body.querySelector('.typing-dots')?.remove();
       const bubble = document.createElement('div');
       bubble.className = 'msg-bubble';
       body.appendChild(bubble);
       return bubble;
     }
 
-    function addSourceCards(row, sources) {
-      if (!sources || sources.length === 0) return;
-      const body = row.querySelector('.msg-body');
-      const existing = body.querySelector('.source-cards');
-      if (existing) existing.remove();
-      const cards = document.createElement('div');
-      cards.className = 'source-cards';
-      sources.forEach(s => {
-        const card = document.createElement('div');
-        card.className = 'source-card';
-        const label = s.label || s;
-        card.innerHTML = `<div class="source-card-label">Source</div><div class="source-card-value">${escHtml(label.replace('Source: ',''))}</div>`;
-        cards.appendChild(card);
-      });
-      body.appendChild(cards);
+    // ── STATUS CHECK ──
+    async function checkStatus() {
+      try {
+        const res = await fetch(`${API}/health`);
+        if (!res.ok) throw new Error();
+
+        statusDot.classList.remove('offline');
+        statusText.textContent = 'Connected';
+      } catch {
+        statusDot.classList.add('offline');
+        statusText.textContent = 'Backend offline';
+      }
     }
 
-    function scrollBottom() {
-      chatArea.scrollTop = chatArea.scrollHeight;
-    }
+    setInterval(checkStatus, 15000);
+    checkStatus();
 
-    function escHtml(str) {
-      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
-    function updateHistoryList() {
-      historyList.innerHTML = '';
-      sessions.slice().reverse().forEach(s => {
-        const item = document.createElement('div');
-        item.className = 'history-item' + (s.id === currentSessionId ? ' active' : '');
-        item.textContent = s.title;
-        item.onclick = () => loadSession(s.id);
-        historyList.appendChild(item);
-      });
-    }
-
-    function loadSession(id) {
-      const s = sessions.find(x => x.id === id);
-      if (!s) return;
-      currentSessionId = id;
-      conversationHistory = [...s.history];
-      chatArea.innerHTML = '';
-      s.messages.forEach(m => {
-        if (m.role === 'user') appendUserMessage(m.content);
-        else {
-          const row = appendAuraMessage();
-          const bubble = convertTypingToBubble(row);
-          marked.setOptions({ breaks: true, gfm: true });
-          bubble.innerHTML = marked.parse(m.content);
-          if (m.sources) addSourceCards(row, m.sources);
-        }
-      });
-      updateHistoryList();
-    }
-
-    function newChat() {
-      conversationHistory = [];
-      currentSessionId = null;
-      chatArea.innerHTML = '';
-      const empty = document.createElement('div');
-      empty.id = 'empty-state';
-      empty.innerHTML = `
-        <div class="empty-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg></div>
-        <div><div class="empty-title">How can I help you today?</div><div class="empty-sub">Ask me about Sunway College programs, RAIN, admissions, or campus life.</div></div>
-        <div class="suggestions">
-          <button class="suggestion-btn" onclick="fillInput('What is the RAIN incubation center?')">What is the RAIN incubation center?<svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
-          <button class="suggestion-btn" onclick="fillInput('What are the placement partners of Sunway College?')">What are the placement partners of Sunway College?<svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
-          <button class="suggestion-btn" onclick="fillInput('What courses are offered?')">What courses are offered?<svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
-        </div>`;
-      chatArea.appendChild(empty);
-      document.getElementById('topbar-title').textContent = 'Sunway College Knowledge Base';
-      updateHistoryList();
-    }
-
+    // ── SEND MESSAGE ──
     async function sendMessage() {
       const text = msgInput.value.trim();
       if (!text || isStreaming) return;
 
       isStreaming = true;
       sendBtn.disabled = true;
-      msgInput.value = '';
-      msgInput.style.height = 'auto';
 
+      msgInput.value = '';
       appendUserMessage(text);
-      const auraRow = appendAuraMessage();
+
+      const auraRow = appendAuraTyping();
+      const bubble = convertToBubble(auraRow);
 
       const historyToSend = [...conversationHistory];
+
       conversationHistory.push({ role: 'user', content: text });
 
       try {
@@ -850,86 +907,45 @@
         });
 
         if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.detail || `Server error ${res.status}`);
+          throw new Error(`Server error ${res.status}`);
         }
 
-        const bubble = convertTypingToBubble(auraRow);
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let full = '';
-        let sources = [];
-        let metadataParsed = false;
-        let streamBuffer = '';
-
-        marked.setOptions({ breaks: true, gfm: true });
 
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-          streamBuffer += decoder.decode(value, { stream: true });
 
-          if (!metadataParsed) {
-            const newlineIdx = streamBuffer.indexOf('\n');
-            if (newlineIdx !== -1) {
-              const line = streamBuffer.slice(0, newlineIdx);
-              if (line.startsWith('__METADATA__:')) {
-                try {
-                  const metaJson = JSON.parse(line.substring('__METADATA__:'.length));
-                  sources = metaJson.sources;
-                  addSourceCards(auraRow, sources);
-                } catch (e) {
-                  console.error("Failed to parse metadata", e);
-                }
-                streamBuffer = streamBuffer.slice(newlineIdx + 1);
-                metadataParsed = true;
-              }
-            }
-          }
-
-          if (metadataParsed || !streamBuffer.startsWith('__METADATA__:')) {
-            metadataParsed = true;
-            full = streamBuffer;
-            bubble.innerHTML = marked.parse(full);
-            scrollBottom();
-          }
+          full += decoder.decode(value, { stream: true });
+          bubble.textContent = full;
+          scrollBottom();
         }
 
         conversationHistory.push({ role: 'assistant', content: full });
 
-        if (!currentSessionId) {
-          currentSessionId = Date.now().toString();
-          sessions.push({ id: currentSessionId, title: text.slice(0, 40) + (text.length > 40 ? '…' : ''), history: [], messages: [] });
-        }
-        const session = sessions.find(s => s.id === currentSessionId);
-        if (session) {
-          session.history = [...conversationHistory];
-          session.messages.push({ role: 'user', content: text });
-          session.messages.push({ role: 'assistant', content: full, sources: sources });
-        }
-        updateHistoryList();
-        document.getElementById('topbar-title').textContent = sessions.find(s => s.id === currentSessionId)?.title || 'Conversation';
-
       } catch (e) {
-        const body = auraRow.querySelector('.msg-body');
-        const dots = body.querySelector('.typing-dots');
-        if (dots) dots.remove();
-        const bubble = document.createElement('div');
-        bubble.className = 'msg-bubble';
-        bubble.style.color = '#DC2626';
-        bubble.textContent = `Error: ${e.message}. Make sure your backend is running and CORS is enabled.`;
-        body.appendChild(bubble);
+        bubble.style.color = 'red';
+        bubble.textContent = `Error: ${e.message}`;
         showError(e.message);
       }
 
       isStreaming = false;
-      sendBtn.disabled = !msgInput.value.trim();
-      msgInput.focus();
+      sendBtn.disabled = false;
     }
 
-    // Init
-    checkStatus();
-    setInterval(checkStatus, 15000);
+    // ── EVENTS ──
+    sendBtn.addEventListener('click', sendMessage);
+
+    msgInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
   </script>
 </body>
+
 </html>
