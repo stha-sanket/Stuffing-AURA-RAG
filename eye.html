@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dual Robotic Eyes</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+    radial-gradient(circle at center,
+    #0b1220 0%,
+    #020617 100%);
+    overflow:hidden;
+}
+
+/* Container */
+.face{
+    display:flex;
+    gap:140px;
+}
+
+/* Eye base */
+.eye{
+    position:relative;
+    width:260px;
+    height:150px;
+    border-radius:22px;
+
+    background:
+    linear-gradient(145deg,#0a1220,#162235);
+
+    border:2px solid rgba(0,255,255,.35);
+
+    box-shadow:
+    0 0 40px rgba(0,255,255,.12),
+    inset 0 0 25px rgba(255,255,255,.05);
+
+    overflow:hidden;
+}
+
+/* Glow ring */
+.eye::before{
+    content:"";
+    position:absolute;
+    inset:18px;
+    border-radius:18px;
+    border:2px solid rgba(0,255,255,.6);
+    box-shadow:0 0 18px cyan;
+    animation:pulse 3s infinite ease-in-out;
+}
+
+/* Core lens */
+.core{
+    position:absolute;
+    width:60px;
+    height:60px;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+
+    background:
+    radial-gradient(circle,
+    #00ffff 0%,
+    #0099ff 40%,
+    #001833 100%);
+
+    box-shadow:
+    0 0 25px #00ffff,
+    0 0 60px #00ffff;
+}
+
+/* Center dot */
+.core::before{
+    content:"";
+    position:absolute;
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    background:white;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    box-shadow:0 0 10px white;
+}
+
+/* Scan line */
+.scan{
+    position:absolute;
+    left:15px;
+    right:15px;
+    height:3px;
+    background:#00ffff;
+    box-shadow:0 0 15px #00ffff;
+    animation:scan 2.2s linear infinite;
+}
+
+/* Corner HUD */
+.corner{
+    position:absolute;
+    width:26px;
+    height:26px;
+    border:3px solid #00f7ff;
+}
+
+.c1{top:10px;left:10px;border-right:none;border-bottom:none;}
+.c2{top:10px;right:10px;border-left:none;border-bottom:none;}
+.c3{bottom:10px;left:10px;border-right:none;border-top:none;}
+.c4{bottom:10px;right:10px;border-left:none;border-top:none;}
+
+/* Blink overlay */
+.blink{
+    position:absolute;
+    inset:0;
+    background:#00ffff;
+    transform:scaleY(0);
+    transform-origin:center;
+    opacity:.9;
+}
+
+/* Blink active */
+.eye.closed .blink{
+    animation:blink 0.14s ease;
+}
+
+/* Animations */
+@keyframes scan{
+    0%{top:18px;}
+    100%{top:calc(100% - 21px);}
+}
+
+@keyframes pulse{
+    0%,100%{opacity:.6;}
+    50%{opacity:1;}
+}
+
+@keyframes blink{
+    0%{transform:scaleY(0);}
+    50%{transform:scaleY(1);}
+    100%{transform:scaleY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="face">
+
+    <!-- LEFT EYE -->
+    <div class="eye" id="eye1">
+        <div class="scan"></div>
+        <div class="core"></div>
+
+        <div class="corner c1"></div>
+        <div class="corner c2"></div>
+        <div class="corner c3"></div>
+        <div class="corner c4"></div>
+
+        <div class="blink"></div>
+    </div>
+
+    <!-- RIGHT EYE -->
+    <div class="eye" id="eye2">
+        <div class="scan"></div>
+        <div class="core"></div>
+
+        <div class="corner c1"></div>
+        <div class="corner c2"></div>
+        <div class="corner c3"></div>
+        <div class="corner c4"></div>
+
+        <div class="blink"></div>
+    </div>
+
+</div>
+
+<script>
+const eyes = document.querySelectorAll(".eye");
+
+function blink(){
+    eyes.forEach(e => e.classList.add("closed"));
+
+    setTimeout(() => {
+        eyes.forEach(e => e.classList.remove("closed"));
+    }, 140);
+
+    const next = Math.random() * 4000 + 2000;
+    setTimeout(blink, next);
+}
+
+setTimeout(blink, 1500);
+</script>
+
+</body>
+</html>
