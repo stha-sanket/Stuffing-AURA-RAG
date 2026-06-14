@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<div style="display:flex;justify-content:center;align-items:center;min-height:360px;background:#111;border-radius:16px;overflow:hidden;">
+<canvas id="c" width="560" height="260"></canvas>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W=560, H=260;
+const eyes=[{cx:160,cy:130},{cx:400,cy:130}];
+const ER=85;
+
+let blink=0, blinkDir=1, isBlinking=false, nextBlink=2500+Math.random()*2000, last=performance.now();
+let winking=false, winkEye=-1, winkType='', winkProgress=0, winkDir=1, winkDone=false;
+
+const winkTypes=['happy','sleepy','squint'];
+
+function drawNormalEye(cx,cy,openY){
+  if(openY<0.01) return;
+  // White circle
+  ctx.beginPath();
+  ctx.ellipse(cx,cy,ER,ER*openY,0,0,Math.PI*2);
+  ctx.fillStyle='#ffffff';
+  ctx.fill();
+
+  // Black iris — large, no pupil, just solid black circle
+  ctx.beginPath();
+  ctx.ellipse(cx,cy,ER*0.48,ER*0.48*openY,0,0,Math.PI*2);
+  ctx.fillStyle='#111111';
+  ctx.fill();
+
+  // Single white shine dot
+  ctx.beginPath();
+  ctx.ellipse(cx-ER*0.18,cy-ER*0.2*openY,ER*0.13,ER*0.11*openY,0,0,Math.PI*2);
+  ctx.fillStyle='rgba(255,255,255,0.95)';
+  ctx.fill();
+
+  // Outline
+  ctx.beginPath();
+  ctx.ellipse(cx,cy,ER,ER*openY,0,0,Math.PI*2);
+  ctx.strokeStyle='#222';
+  ctx.lineWidth=3;
+  ctx.stroke();
+}
+
+// Happy wink: big upward arc ^^
+function drawHappyWink(cx,cy){
+  ctx.save();
+  // white bg circle
+  ctx.beginPath();ctx.arc(cx,cy,ER,0,Math.PI*2);
+  ctx.fillStyle='#ffffff';ctx.fill();
+  ctx.strokeStyle='#222';ctx.lineWidth=3;ctx.stroke();
+  // arc
+  ctx.beginPath();
+  ctx.moveTo(cx-ER*0.6,cy+ER*0.1);
+  ctx.quadraticCurveTo(cx,cy-ER*0.65,cx+ER*0.6,cy+ER*0.1);
+  ctx.strokeStyle='#111';ctx.lineWidth=9;ctx.lineCap='round';ctx.stroke();
+  ctx.restore();
+}
+
+// Sleepy wink: half-lid drooping line, heavy
+function drawSleepyWink(cx,cy){
+  ctx.save();
+  ctx.beginPath();ctx.arc(cx,cy,ER,0,Math.PI*2);
+  ctx.fillStyle='#ffffff';ctx.fill();
+  ctx.strokeStyle='#222';ctx.lineWidth=3;ctx.stroke();
+  // flat droopy line
+  ctx.beginPath();
+  ctx.moveTo(cx-ER*0.62,cy+ER*0.05);
+  ctx.quadraticCurveTo(cx+ER*0.1,cy+ER*0.12,cx+ER*0.62,cy-ER*0.05);
+  ctx.strokeStyle='#111';ctx.lineWidth=9;ctx.lineCap='round';ctx.stroke();
+  // small dot under
+  ctx.beginPath();ctx.arc(cx,cy+ER*0.3,5,0,Math.PI*2);
+  ctx.fillStyle='#333';ctx.fill();
+  ctx.restore();
+}
+
+// Squint wink: tight angled lines like >
+function drawSquintWink(cx,cy){
+  ctx.save();
+  ctx.beginPath();ctx.arc(cx,cy,ER,0,Math.PI*2);
+  ctx.fillStyle='#ffffff';ctx.fill();
+  ctx.strokeStyle='#222';ctx.lineWidth=3;ctx.stroke();
+  // two lines forming a sideways V
+  ctx.strokeStyle='#111';ctx.lineWidth=8;ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.beginPath();
+  ctx.moveTo(cx-ER*0.55,cy-ER*0.22);
+  ctx.lineTo(cx+ER*0.1,cy+ER*0.05);
+  ctx.lineTo(cx-ER*0.55,cy+ER*0.3);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawEye(cx,cy,openY,isWink,type){
+  if(isWink){
+    if(type==='happy') drawHappyWink(cx,cy);
+    else if(type==='sleepy') drawSleepyWink(cx,cy);
+    else drawSquintWink(cx,cy);
+  } else {
+    drawNormalEye(cx,cy,openY);
+  }
+}
+
+function draw(blink){
+  ctx.clearRect(0,0,W,H);
+  const openY=1-blink;
+  eyes.forEach((e,i)=>{
+    const isWink=winking&&winkEye===i;
+    drawEye(e.cx,e.cy,openY,isWink,winkType);
+  });
+}
+
+function loop(now){
+  const dt=now-last; last=now;
+
+  if(!winking){
+    if(isBlinking){
+      blink+=blinkDir*(dt/60);
+      if(blink>=1){blink=1;blinkDir=-1;}
+      if(blink<=0){blink=0;blinkDir=1;isBlinking=false;}
+    } else {
+      nextBlink-=dt;
+      if(nextBlink<=0){
+        const r=Math.random();
+        if(r<0.45){
+          // normal blink
+          isBlinking=true;blinkDir=1;blink=0;
+          nextBlink=2000+Math.random()*3500;
+        } else {
+          // wink with random type
+          winking=true;
+          winkEye=Math.floor(Math.random()*2);
+          winkType=winkTypes[Math.floor(Math.random()*winkTypes.length)];
+          setTimeout(()=>{winking=false;nextBlink=1800+Math.random()*3000;},700);
+        }
+      }
+    }
+  }
+
+  draw(blink);
+  requestAnimationFrame(loop);
+}
+
+requestAnimationFrame(loop);
+</script>
+</div>
