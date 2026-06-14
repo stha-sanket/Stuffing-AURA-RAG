@@ -12,11 +12,22 @@ var listeningLabel    = document.getElementById('listening-label');
 var orb               = document.getElementById('orb');
 var bars              = document.querySelectorAll('.bar');
 
-// ── Backend API (Cloudflare Tunnel) ────────────────────────────────────────
-const API = ' https://featured-sapphire-built-shoot.trycloudflare.com';
+// ── Backend API (main server: /chat, /transcribe) ───────────────────────────
+const API = 'https://flower-stocks-drinks-lyrics.trycloudflare.com'; // update with current tunnel URL
 
 // ── Conversation history ───────────────────────────────────────────────────
 var conversationHistory = [];
+
+// ── Physical button trigger (via SocketIO from Pi GPIO) ─────────────────────
+var socket = io();
+
+socket.on('mic_trigger', function () {
+  if (busy) return;
+  if (!screensaver.classList.contains('hidden')) {
+    hideScreensaver();
+  }
+  startMic();
+});
 
 // ── Idle screensaver ───────────────────────────────────────────────────────
 var IDLE_MS = 40000;
@@ -45,95 +56,95 @@ function hideScreensaver() {
   resetIdle();
 }
 
-screensaver.addEventListener('contextmenu', function (e) {
-  e.preventDefault();
-  hideScreensaver();
-});
-
 ['click', 'keydown', 'mousemove', 'touchstart'].forEach(function (ev) {
   document.addEventListener(ev, resetIdle, { passive: true });
 });
 
 resetIdle();
 
-// ── Mic / Speech Recognition ───────────────────────────────────────────────
-var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-var recognition = null;
+// ── Mic / Recording (AI4Bharat STT via /transcribe) ─────────────────────────
+var mediaRecorder = null;
+var audioChunks = [];
 var micActive = false;
 
 function startMic() {
-  if (!SpeechRecognition) {
-    alert('Voice input is not supported in this browser. Please use Chrome or Edge.');
-    return;
-  }
   if (micActive) { stopMic(); return; }
 
-  recognition = new SpeechRecognition();
-  recognition.lang = 'en-US';
-  recognition.interimResults = true;
-  recognition.continuous = false;
-
-  recognition.onstart = function () {
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
     micActive = true;
     micBtn.classList.add('mic-listening');
     listeningLabel.textContent = 'Listening';
     orb.classList.remove('orb-active');
     bars.forEach(function (b) { b.classList.remove('bar-active'); });
     listeningOverlay.classList.remove('hidden');
-  };
 
-  recognition.onresult = function (event) {
-    var interim = '';
-    var final = '';
-    for (var i = event.resultIndex; i < event.results.length; i++) {
-      if (event.results[i].isFinal) {
-        final += event.results[i][0].transcript;
-      } else {
-        interim += event.results[i][0].transcript;
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+
+    mediaRecorder.ondataavailable = function (e) {
+      audioChunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = function () {
+      stream.getTracks().forEach(function (t) { t.stop(); });
+      var audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      transcribeAudio(audioBlob);
+    };
+
+    mediaRecorder.start();
+
+    orb.classList.add('orb-active');
+    bars.forEach(function (b) { b.classList.add('bar-active'); });
+
+    // auto-stop after 8s
+    setTimeout(function () {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
       }
-    }
-    var text = final || interim;
-    if (text.trim()) {
-      orb.classList.add('orb-active');
-      bars.forEach(function (b) { b.classList.add('bar-active'); });
-    }
-    if (final.trim()) {
-      recognition.stop();
-      submitFromMic(final.trim());
-    }
-  };
+    }, 8000);
 
-  recognition.onerror = function (e) {
-    stopMic();
-    if (e.error !== 'no-speech' && e.error !== 'aborted') {
-      alert('Microphone error: ' + e.error + '. Please allow microphone access.');
-    }
-  };
-
-  recognition.onend = function () {
-    micActive = false;
-    micBtn.classList.remove('mic-listening');
-    listeningOverlay.classList.add('hidden');
-  };
-
-  recognition.start();
+  }).catch(function (err) {
+    alert('Microphone access denied: ' + err.message);
+  });
 }
 
 function stopMic() {
-  if (recognition) {
-    try { recognition.abort(); } catch (e) {}
-    recognition = null;
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop();
   }
   micActive = false;
   micBtn.classList.remove('mic-listening');
   listeningOverlay.classList.add('hidden');
 }
 
-function submitFromMic(text) {
-  setTimeout(function () {
+async function transcribeAudio(blob) {
+  listeningLabel.textContent = 'Transcribing...';
+
+  var formData = new FormData();
+  formData.append('audio', blob, 'recording.webm');
+  formData.append('language', 'ne'); // 'ne' for Nepali, 'en' for English, 'hi' for Hindi
+
+  try {
+    var res = await fetch(API + '/transcribe', {
+      method: 'POST',
+      body: formData
+    });
+    if (!res.ok) throw new Error('Transcription failed (' + res.status + ')');
+    var data = await res.json();
+
+    micActive = false;
+    micBtn.classList.remove('mic-listening');
     listeningOverlay.classList.add('hidden');
-    sendMessage(text);
-  }, 400);
+
+    if (data.text && data.text.trim()) {
+      sendMessage(data.text.trim());
+    }
+  } catch (err) {
+    micActive = false;
+    micBtn.classList.remove('mic-listening');
+    listeningOverlay.classList.add('hidden');
+    alert('Transcription error: ' + err.message);
+  }
 }
 
 micBtn.addEventListener('click', function () {
@@ -151,19 +162,6 @@ function clearChat() {
 
 function scrollBottom() {
   messagesEl.scrollTop = messagesEl.scrollHeight;
-}
-
-function typewrite(el, text, speed) {
-  speed = speed || 12;
-  return new Promise(function (resolve) {
-    var i = 0;
-    var tick = setInterval(function () {
-      el.textContent += text[i];
-      i++;
-      scrollBottom();
-      if (i >= text.length) { clearInterval(tick); resolve(); }
-    }, speed);
-  });
 }
 
 function addUserMessage(text) {
@@ -215,35 +213,7 @@ function addThinking() {
   return row;
 }
 
-async function addAuraMessage(text) {
-  var row = document.createElement('div');
-  row.className = 'msg-row row-aura';
-
-  var sender = document.createElement('div');
-  sender.className = 'msg-sender';
-  sender.textContent = 'Aura';
-
-  var auraRow = document.createElement('div');
-  auraRow.className = 'aura-row';
-
-  var avatar = document.createElement('div');
-  avatar.className = 'aura-avatar';
-  avatar.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C61F3A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>';
-
-  var bubble = document.createElement('div');
-  bubble.className = 'msg-bubble';
-
-  auraRow.appendChild(avatar);
-  auraRow.appendChild(bubble);
-  row.appendChild(sender);
-  row.appendChild(auraRow);
-  messagesEl.appendChild(row);
-  scrollBottom();
-
-  await typewrite(bubble, text, 12);
-}
-
-// ── Backend API call (streaming) ───────────────────────────────────────────
+// ── Backend /chat call (streaming text/plain with __METADATA__ prefix) ─────
 async function callBackend(userText, bubbleEl) {
   var historyToSend = conversationHistory.slice();
   conversationHistory.push({ role: 'user', content: userText });
@@ -254,7 +224,7 @@ async function callBackend(userText, bubbleEl) {
     body: JSON.stringify({
       message: userText,
       history: historyToSend,
-      model: 'claude-haiku-4-5-20251001' // adjust to whatever your backend expects
+      model: 'gemma4:e2b'
     })
   });
 
@@ -265,17 +235,55 @@ async function callBackend(userText, bubbleEl) {
   var reader = res.body.getReader();
   var decoder = new TextDecoder();
   var full = '';
+  var metadataStripped = false;
+  var buffer = '';
 
   while (true) {
     var chunk = await reader.read();
     if (chunk.done) break;
-    full += decoder.decode(chunk.value, { stream: true });
+    buffer += decoder.decode(chunk.value, { stream: true });
+
+    if (!metadataStripped) {
+      var nlIndex = buffer.indexOf('\n');
+      if (nlIndex === -1) continue; // wait for full metadata line
+      buffer = buffer.slice(nlIndex + 1);
+      metadataStripped = true;
+    }
+
+    full += buffer;
+    buffer = '';
     bubbleEl.textContent = full;
     scrollBottom();
   }
 
   conversationHistory.push({ role: 'assistant', content: full });
   return full;
+}
+
+// ── TTS playback via Pi's local Piper (/synthesize-raw, same origin) ───────
+async function speak(text) {
+  try {
+    var formData = new FormData();
+    formData.append('text', text);
+
+    resetIdle();
+
+    var res = await fetch('/synthesize-raw', {
+      method: 'POST',
+      body: formData
+    });
+    if (!res.ok) return;
+
+    var blob = await res.blob();
+    var audio = new Audio(URL.createObjectURL(blob));
+
+    audio.onplay = function () { resetIdle(); };
+    audio.onended = function () { resetIdle(); };
+
+    audio.play().catch(function () {});
+  } catch (e) {
+    console.error('TTS error:', e);
+  }
 }
 
 // ── Send logic ─────────────────────────────────────────────────────────────
@@ -299,22 +307,23 @@ async function sendMessage(text) {
   var thinkEl = addThinking();
 
   try {
-    // Replace the "thinking" bubble with a live-updating bubble for streaming
     var auraRow = thinkEl.querySelector('.aura-row');
     var thinkingBubble = auraRow.querySelector('.thinking-bubble');
     var liveBubble = document.createElement('div');
     liveBubble.className = 'msg-bubble';
     thinkingBubble.replaceWith(liveBubble);
 
-    await callBackend(text, liveBubble);
+    var reply = await callBackend(text, liveBubble);
+    speak(reply); // play TTS audio after full response
+
   } catch (err) {
     var auraRow2 = thinkEl.querySelector('.aura-row');
     var existingBubble = auraRow2.querySelector('.msg-bubble, .thinking-bubble');
     if (existingBubble) existingBubble.remove();
     var errBubble = document.createElement('div');
     errBubble.className = 'msg-bubble';
+    errBubble.textContent = 'Sorry, I could not connect right now. Please try again or speak to the reception desk. (' + err.message + ')';
     auraRow2.appendChild(errBubble);
-    await typewrite(errBubble, 'Sorry, I could not connect right now. Please try again or speak to the reception desk. (' + err.message + ')', 12);
   }
 
   setLocked(false);
