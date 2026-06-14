@@ -7,13 +7,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
 
   <!-- Screensaver Overlay -->
   <div id="screensaver" class="hidden">
-    <video id="screensaver-video" src="YTDown_YouTube_Why-Sunway-College_Media_w0scmm9CCsU_001_1080p.mp4" loop playsinline></video>
+    <video id="screensaver-video" src="{{ url_for('static', filename='YTDown_YouTube_Why-Sunway-College_Media_w0scmm9CCsU_001_1080p.mp4') }}" loop playsinline></video>
     <div id="screensaver-hint">Tap anywhere to return</div>
   </div>
 
@@ -92,6 +92,6 @@
 
   </div>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <script src="script.js"></script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
